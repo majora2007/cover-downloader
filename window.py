@@ -209,7 +209,7 @@ class ImageViewer:
             label_filename = tk.Label(stack_frame, text=f"Filename: {item['filename']}")
             label_filename.grid(row=1, column=0, padx=5)
 
-            if item['selected']:
+            if item['selected'] and 'target_img' in item:
                 item['selected'] = tk.IntVar(value=True)
             else:
                 item['selected'] = tk.IntVar(value=False)
