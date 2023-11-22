@@ -92,9 +92,9 @@ def verify_elem_xpath(driver, selector):
 
 
 def verify_elems(driver, selector):
-    WebDriverWait(driver, wait_time).until(EC.presence_of_element_located((By.CSS_SELECTOR, selector)))
-    elems = driver.find_elements_by_css_selector(selector)
-    return elems
+    return WebDriverWait(driver, wait_time).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, selector)))
+    # elems = driver.find_elements(selector)
+    # return elems
 
 
 def sleep(t):

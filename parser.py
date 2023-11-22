@@ -40,6 +40,7 @@ MangaVolumeRegex = [
     re.compile(r'(\s|_)?(?P<Volume>\d+(\-)?\d?)(\s|_)Том(а?)', re.IGNORECASE),
 ]
 
+
 def parse_volume(filename):
     for regex in MangaVolumeRegex:
         matches = regex.finditer(filename)
@@ -52,6 +53,7 @@ def parse_volume(filename):
             return format_value(value, has_part)
 
     return None
+
 
 def format_value(value, has_part):
     def remove_leading_zeroes(title):
@@ -75,7 +77,3 @@ def format_value(value, has_part):
 
     to_value = remove_leading_zeroes(add_chapter_part(tokens[1]) if has_part else tokens[1])
     return f"{from_value}-{to_value}"
-
-
-
-
