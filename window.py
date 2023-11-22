@@ -79,7 +79,8 @@ def process_directory(directory):
                 'filename': cbz_file,
                 'first_image_path': first_image,
                 'base64_image': image_data,
-                'volume_num': vol_num
+                'volume_num': vol_num,
+                'selected': None
             })
 
     return result_data
@@ -91,7 +92,7 @@ def find_covers(search_term):
     search_term = 'https://mangadex.org/title/af96c6a2-b3f7-405b-821a-019fed3d44db/uchi-no-musume-ni-te-o-dasu-na-amazing-eighth-wonder?tab=art'
 
     print(f"Downloading covers for: {search_term}")
-    driver = webdriver_util.init_chrome(headless=False)
+    driver = webdriver_util.init_chrome(headless=True)
     webdriver_util.get_url(driver, search_term)
     webdriver_util.sleep(1)
 
@@ -137,6 +138,10 @@ class ImageViewer:
                                          state=tk.DISABLED)
         self.download_button.grid(row=0, column=2, padx=5, pady=5)
 
+        self.process_button = tk.Button(master, text="Process", command=self.process_selected_cbz,
+                                         state=tk.DISABLED)
+        self.process_button.grid(row=0, column=3, padx=5, pady=5)
+
         self.stack_frames = []  # To keep track of the stack frames for later updates
 
         master.grid_rowconfigure(1, weight=1)
@@ -164,7 +169,23 @@ class ImageViewer:
                 if vol_label == vol_number:
                     item['target_img'] = image['src']
                     item['downloaded_vol'] = vol_number
+                    item['selected'] = True
                     break
+
+    def process_selected_cbz(self):
+        selected_items = [item for item in self.result_data if item['selected'].get() is 1]
+
+        for item in selected_items:
+            cbz_path = item['filename']
+
+            with zipfile.ZipFile(cbz_path, 'a') as cbz_file:
+                cover_data = base64.b64decode(item['target_img'])
+                cbz_file.writestr('!000 cover.jpg', cover_data)
+                item['target_img'] = cover_data
+
+        self.update_ui()
+
+
 
     def update_ui(self):
         # Remove existing stack frames
@@ -188,8 +209,11 @@ class ImageViewer:
             label_filename = tk.Label(stack_frame, text=f"Filename: {item['filename']}")
             label_filename.grid(row=1, column=0, padx=5)
 
-            checkbox_var = tk.IntVar()
-            checkbox = tk.Checkbutton(stack_frame, variable=checkbox_var)
+            if item['selected']:
+                item['selected'] = tk.IntVar(value=True)
+            else:
+                item['selected'] = tk.IntVar(value=False)
+            checkbox = tk.Checkbutton(stack_frame, variable=item['selected'])
             checkbox.grid(row=2, column=0)
 
             if 'target_img' in item:
@@ -213,3 +237,4 @@ class ImageViewer:
 
         # Enable the Download Covers button
         self.download_button.config(state=tk.NORMAL)
+        self.process_button.config(state=tk.NORMAL)
