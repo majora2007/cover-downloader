@@ -27,7 +27,7 @@ def find_first_image(zip_file):
         files = archive.namelist()
 
         # Find the first image file at the highest root level
-        image_files = [file for file in files if file.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))]
+        image_files = [file for file in files if file.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp'))]
 
         if image_files:
             first_image_path = image_files[0]
@@ -89,7 +89,7 @@ def process_directory(directory):
 def find_covers(search_term):
     if '?' in search_term:
         search_term = search_term.split('?')[0] + '?tab=art'
-    search_term = 'https://mangadex.org/title/af96c6a2-b3f7-405b-821a-019fed3d44db/uchi-no-musume-ni-te-o-dasu-na-amazing-eighth-wonder?tab=art'
+    #search_term = 'https://mangadex.org/title/af96c6a2-b3f7-405b-821a-019fed3d44db/uchi-no-musume-ni-te-o-dasu-na-amazing-eighth-wonder?tab=art'
 
     print(f"Downloading covers for: {search_term}")
     driver = webdriver_util.init_chrome(headless=True)
@@ -173,7 +173,7 @@ class ImageViewer:
                     break
 
     def process_selected_cbz(self):
-        selected_items = [item for item in self.result_data if item['selected'].get() is 1]
+        selected_items = [item for item in self.result_data if item['selected'].get() == 1]
 
         for item in selected_items:
             cbz_path = item['filename']
